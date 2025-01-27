@@ -74,6 +74,8 @@ static int openal_load_sdl_library(void)
 {
 #ifdef OPENAL_DLOPEN_SDL
         char * error = NULL;
+		char * selectedSDLLib;
+		char defaultSDLLib[] = "libSDL-1.2.so.0";
 #endif
     
 	if (sdl_lib_handle != NULL)
@@ -87,7 +89,11 @@ static int openal_load_sdl_library(void)
                                                            dlclose(sdl_lib_handle); sdl_lib_handle = NULL; \
                                                            return 0; }
                 dlerror(); /* clear error state */
-		sdl_lib_handle = dlopen("libSDL.so", RTLD_LAZY | RTLD_GLOBAL);
+		/* Instead of using constant libSDL.so, check if user override with another name */
+		selectedSDLLib = getenv("OAL_SDL_LIBRARY");
+		if ((!selectedSDLLib) || (strcmp(selectedSDLLib, "") == 0))
+			selectedSDLLib = defaultSDLLib; /* Fallback to default SDL 1.2 */
+		sdl_lib_handle = dlopen(selectedSDLLib, RTLD_LAZY | RTLD_GLOBAL);
                 error = dlerror();
 		if (sdl_lib_handle == NULL) {
                         fprintf(stderr,"Could not open SDL library: %s\n",((error!=NULL)?(error):("(null)")));
