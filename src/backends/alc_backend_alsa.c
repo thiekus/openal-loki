@@ -89,6 +89,8 @@ static int openal_load_alsa_library(void)
 {
 #ifdef OPENAL_DLOPEN_ALSA
         char * error = NULL;
+		char * selectedALSALib;
+		char defaultALSALib[] = "libasound.so.2";
 #endif
     
 	if (alsa_lib_handle != NULL)
@@ -118,7 +120,11 @@ static int openal_load_alsa_library(void)
                                                                    return 0; } else _alDebug(ALD_MAXIMUS, __FILE__, __LINE__, "got %s", #x); \
                                                    } else _alDebug(ALD_MAXIMUS, __FILE__, __LINE__, "got %s", #x "@ALSA_0.9rc4");
                 dlerror(); /* clear error state */
-		alsa_lib_handle = dlopen("libasound.so.2", RTLD_LAZY | RTLD_GLOBAL);
+		/* Instead of using constant libasound.so.2, check if user override with another name */
+		selectedALSALib = getenv("OAL_ALSA_LIBRARY");
+		if ((!selectedALSALib) || (strcmp(selectedALSALib, "") == 0))
+			selectedALSALib = defaultALSALib; /* Fallback to default libasound.so.2 */
+		alsa_lib_handle = dlopen(selectedALSALib, RTLD_LAZY | RTLD_GLOBAL);
                 error = dlerror();
 		if (alsa_lib_handle == NULL) {
                         fprintf(stderr,"Could not open ALSA library: %s\n",((error!=NULL)?(error):("(null)")));
