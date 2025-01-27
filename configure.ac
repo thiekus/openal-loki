@@ -46,7 +46,8 @@ m4_ifdef([AS_HELP_STRING], [], [AC_DEFUN([AS_HELP_STRING], [AC_HELP_STRING($][@)
 # the purpose of library versions. Furthermore, do not confuse those versions
 # with the version of the specification which is implemented.
 
-CURRENT=1
+# To match tarball release of v0.0.8
+CURRENT=0
 REVISION=0
 AGE=0
 
